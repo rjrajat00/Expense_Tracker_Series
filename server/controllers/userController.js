@@ -7,6 +7,12 @@ const addUser = async (req, res) => {
 
     console.log(name, email, password);
 
+    const existingUser = await SignUp.findOne({ where: { email } });
+
+    if (existingUser) {
+      return res.status(409).send("User with this email already exists.");
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await SignUp.create({ name: name, email: email, password: hashedPassword });

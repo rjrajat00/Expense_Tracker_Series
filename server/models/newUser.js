@@ -9,7 +9,7 @@ const SignUp = sequelize.define("sign_up", {
   },
   email: {
     type: Sequelize.STRING,
-    unique: true,
+
     allowNull: false,
   },
 

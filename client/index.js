@@ -17,6 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
         password: password,
       };
 
+      if (email) {
+        console.log("user Already exists");
+      }
+
       const response = await axios.post("/api/newUser", data);
       form.reset();
 
