@@ -76,6 +76,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         showAlert();
       }
+      //
+      if (response.status === 401) {
+        console.log("this is response data==>", response.data);
+        const errMsg1 = document.getElementById("error-message");
+        errMsg1.innerHTML = `<b>Invalid username or password</b>`;
+        errMsg1.style.color = "red";
+        errMsg1.style.display = "block";
+
+        setTimeout(() => {
+          errMsg1.style.display = "none";
+        }, 3000);
+      } else if (response.status === 200) {
+        const errMsg = document.getElementById("error-message");
+        errMsg.innerHTML = `<b>Logged In Successfully  !! </b>`;
+        errMsg.style.color = "green";
+        errMsg.style.display = "block";
+
+        setTimeout(() => {
+          errMsg.style.display = "none";
+        }, 3000);
+      }
+
       login.reset();
       console.log(response);
     } catch (error) {

@@ -32,15 +32,15 @@ const loginUser = async (req, res) => {
     const user = await SignUp.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid Username" });
+      return res.status(401).json({ error: "Invalid User" });
     }
 
     const passwordMatch = await bcrypt.compare(logPassword, user.password);
 
     if (passwordMatch) {
-      res.redirect("/dashboard");
+      res.status(200).json({ Logged: "In successfully" });
     } else {
-      res.status(401).json({ error: "Invalid password" });
+      res.status(401).json({ error: "User Not Authorized" });
     }
   } catch (error) {
     res.status(500).send("Internal Server Error, " + error);
