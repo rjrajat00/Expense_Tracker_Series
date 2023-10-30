@@ -19,10 +19,11 @@ app.use(express.json());
 app.use(express.static("client"));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "index.html"));
+  res.sendFile(path.join(__dirname, "client", "user.html"));
 });
 
 app.use("/api/newUser", newUserRouter);
+app.use("/api/user", newUserRouter);
 
 const port = process.env.PORT || 5000;
 

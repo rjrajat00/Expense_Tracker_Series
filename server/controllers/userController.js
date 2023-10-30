@@ -5,7 +5,7 @@ const addUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    console.log(name, email, password);
+    console.log(`register User==>`, name, email, password);
 
     const existingUser = await SignUp.findOne({ where: { email } });
 
@@ -23,4 +23,28 @@ const addUser = async (req, res) => {
   }
 };
 
-module.exports = { addUser };
+const loginUser = async (req, res) => {
+  const { email, logPassword } = req.body;
+
+  console.log(`Login Details, username=>${email} and password=>${logPassword}`);
+
+  try {
+    const user = await SignUp.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid Username" });
+    }
+
+    const passwordMatch = await bcrypt.compare(logPassword, user.password);
+
+    if (passwordMatch) {
+      res.redirect("/dashboard");
+    } else {
+      res.status(401).json({ error: "Invalid password" });
+    }
+  } catch (error) {
+    res.status(500).send("Internal Server Error, " + error);
+  }
+};
+
+module.exports = { addUser, loginUser };

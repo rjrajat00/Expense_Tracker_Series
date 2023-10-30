@@ -1,7 +1,25 @@
 console.log("hello from index js");
 
+const loginForm = document.getElementById("login-form");
+const signupForm = document.querySelector(".signup-form");
+const loginLink = document.getElementById("login-link");
+const signupLink = document.getElementById("signup-link");
+
+loginLink.addEventListener("click", function (e) {
+  e.preventDefault();
+  loginForm.style.display = "block";
+  signupForm.style.display = "none";
+});
+
+signupLink.addEventListener("click", function (e) {
+  e.preventDefault();
+  loginForm.style.display = "none";
+  signupForm.style.display = "block";
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("form");
+  const showAlert = document.getElementById("showAlert");
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -18,7 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       if (email) {
-        console.log("user Already exists");
+        console.log("user created");
+        function showAlert() {
+          alert("User created");
+        }
+        showAlert();
       }
 
       const response = await axios.post("/api/newUser", data);
@@ -26,8 +48,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log(response);
     } catch (error) {
-      console.error("Failed to send data from (client side)");
+      console.error("Failed to send data from (client side)  ", error);
       form.reset();
+    }
+  });
+
+  const login = document.getElementById("login-form");
+
+  login.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("username").value;
+    const logPassword = document.getElementById("login-password").value;
+
+    try {
+      const loginData = {
+        email: email,
+        logPassword: logPassword,
+      };
+
+      const response = await axios.post("/api/user/login", loginData);
+
+      if (email && logPassword) {
+        console.log("Login Successful");
+        function showAlert() {
+          alert("Logged In Successfully");
+        }
+        showAlert();
+      }
+      login.reset();
+      console.log(response);
+    } catch (error) {
+      console.error("Invalid username or password :" + error);
+      login.reset();
     }
   });
 });
