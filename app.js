@@ -4,6 +4,8 @@ const path = require("path");
 
 const cors = require("cors");
 
+const colors = require("colors");
+
 const bodyParser = require("body-parser");
 const newUserRouter = require("./server/routes/routes");
 const sequelize = require("./server/models/db");
@@ -31,8 +33,8 @@ sequelize
   .authenticate()
   .then(() => {
     app.listen(port, () => {
-      console.log(`server is running on port ${port}`);
-      console.log("Connected To Database Successfully");
+      console.log(`Server is running on port ${port}`.red);
+      console.log("Connected To Database Successfully".underline.blue);
     });
 
     sequelize.sync(() => {

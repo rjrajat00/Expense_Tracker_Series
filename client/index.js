@@ -35,15 +35,32 @@ document.addEventListener("DOMContentLoaded", () => {
         password: password,
       };
 
-      if (email) {
-        console.log("user created");
-        function showAlert() {
-          alert("User created");
-        }
-        showAlert();
+      const response = await axios.post("/api/newUser", data);
+
+      if (response.status === 201) {
+        const errMsg = document.getElementById("signup-message");
+        errMsg.innerHTML = `<b>Signed Up Successfully !! </b>`;
+
+        errMsg.style.color = "green";
+        errMsg.style.marginTop = "20px";
+        errMsg.style.display = "block";
+
+        setTimeout(() => {
+          errMsg.style.display = "none";
+        }, 3000);
+      } else if (response.status === 409) {
+        const errMsg = document.getElementById("signup-message");
+        errMsg.innerHTML = `<b>User Already Exists !! </b>`;
+
+        errMsg.style.color = "red";
+        errMsg.style.marginTop = "20px";
+        errMsg.style.display = "block";
+
+        setTimeout(() => {
+          errMsg.style.display = "none";
+        }, 3000);
       }
 
-      const response = await axios.post("/api/newUser", data);
       form.reset();
 
       console.log(response);
@@ -69,26 +86,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const response = await axios.post("/api/user/login", loginData);
 
-      if (email && logPassword) {
-        console.log("Login Successful");
-        function showAlert() {
-          alert("Logged In Successfully");
-        }
-        showAlert();
-      }
       //
       if (response.status === 401) {
-        console.log("this is response data==>", response.data);
-        const errMsg1 = document.getElementById("error-message");
-        errMsg1.innerHTML = `<b>Invalid username or password</b>`;
-        errMsg1.style.color = "red";
-        errMsg1.style.display = "block";
+        console.log("this is response status==>", response.status);
+        const errorMessage = response.data.error;
+        const errMsg = document.getElementById("login-message");
+        errMsg.innerHTML = `<b>User Unauthorized</b>`;
+        errMsg.style.color = "red";
+        errMsg.style.display = "block";
 
         setTimeout(() => {
-          errMsg1.style.display = "none";
+          errMsg.style.display = "none";
         }, 3000);
       } else if (response.status === 200) {
-        const errMsg = document.getElementById("error-message");
+        const errMsg = document.getElementById("login-message");
         errMsg.innerHTML = `<b>Logged In Successfully  !! </b>`;
         errMsg.style.color = "green";
         errMsg.style.display = "block";

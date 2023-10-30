@@ -10,7 +10,7 @@ const addUser = async (req, res) => {
     const existingUser = await SignUp.findOne({ where: { email } });
 
     if (existingUser) {
-      return res.status(409).send("User with this email already exists.");
+      res.status(409).send("User with this email already exists.");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,7 +32,7 @@ const loginUser = async (req, res) => {
     const user = await SignUp.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid User" });
+      res.status(403).json({ error: "Invalid User" });
     }
 
     const passwordMatch = await bcrypt.compare(logPassword, user.password);
