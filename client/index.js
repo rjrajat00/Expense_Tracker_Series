@@ -49,26 +49,29 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
           errMsg.style.display = "none";
         }, 3000);
-      } else if (response.status === 409) {
-        console.log("response status ,(409 expected)=>", response.status);
-        const errMsg = document.getElementById("signup-message");
-        errMsg.innerHTML = `<b>User Already Exists !! </b>`;
-
-        errMsg.style.color = "red";
-        errMsg.style.marginTop = "20px";
-        errMsg.style.display = "block";
-
-        setTimeout(() => {
-          errMsg.style.display = "none";
-        }, 3000);
       }
 
       form.reset();
 
       console.log(response);
     } catch (error) {
-      console.error("Failed to send data from (client side)  ", error);
-      form.reset();
+      if (error.response.status === 409) {
+        console.log(
+          "this is response status==(409 expected)>",
+          error.response.status
+        );
+        const errMsg = document.getElementById("signup-message");
+        errMsg.innerHTML = `<b>User Already Exists!!!</b>`;
+        errMsg.style.color = "red";
+        errMsg.style.fontFamily = "monospace, sans-serif";
+        errMsg.style.display = "block";
+
+        setTimeout(() => {
+          errMsg.style.display = "none";
+        }, 3000);
+
+        form.reset();
+      }
     }
   });
 
