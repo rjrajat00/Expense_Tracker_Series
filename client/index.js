@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await axios.post("/api/newUser", data);
 
       if (response.status === 201) {
+        console.log("response status , (201 expected)=>", response.status);
         const errMsg = document.getElementById("signup-message");
         errMsg.innerHTML = `<b>Signed Up Successfully !! </b>`;
 
@@ -49,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
           errMsg.style.display = "none";
         }, 3000);
       } else if (response.status === 409) {
+        console.log("response status ,(409 expected)=>", response.status);
         const errMsg = document.getElementById("signup-message");
         errMsg.innerHTML = `<b>User Already Exists !! </b>`;
 
@@ -87,20 +89,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await axios.post("/api/user/login", loginData);
 
       //
-      if (response.status === 401) {
+      if (response.status === 200) {
         console.log("this is response status==>", response.status);
-        const errorMessage = response.data.error;
-        const errMsg = document.getElementById("login-message");
-        errMsg.innerHTML = `<b>User Unauthorized</b>`;
-        errMsg.style.color = "red";
-        errMsg.style.display = "block";
 
-        setTimeout(() => {
-          errMsg.style.display = "none";
-        }, 3000);
-      } else if (response.status === 200) {
         const errMsg = document.getElementById("login-message");
-        errMsg.innerHTML = `<b>Logged In Successfully  !! </b>`;
+        errMsg.innerHTML = `<b>Logged In Successfully !!</b>`;
         errMsg.style.color = "green";
         errMsg.style.display = "block";
 
@@ -112,7 +105,34 @@ document.addEventListener("DOMContentLoaded", () => {
       login.reset();
       console.log(response);
     } catch (error) {
-      console.error("Invalid username or password :" + error);
+      if (error.response.status === 401) {
+        console.log(
+          "this is response status==(401 expected)>",
+          error.response.status
+        );
+        const errMsg = document.getElementById("login-message");
+        errMsg.innerHTML = `<b>Unauthorized Access </b>`;
+        errMsg.style.color = "red";
+        errMsg.style.display = "block";
+
+        setTimeout(() => {
+          errMsg.style.display = "none";
+        }, 3000);
+      } else if (error.response.status === 404) {
+        console.log(
+          "this is response status==(404 expected)>",
+          error.response.status
+        );
+        const errMsg = document.getElementById("login-message");
+        errMsg.innerHTML = `<b>User Not Found </b>`;
+        errMsg.style.color = "red";
+        errMsg.style.display = "block";
+
+        setTimeout(() => {
+          errMsg.style.display = "none";
+        }, 3000);
+      }
+
       login.reset();
     }
   });
