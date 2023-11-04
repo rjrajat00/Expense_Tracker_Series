@@ -38,7 +38,7 @@ const loginUser = async (req, res) => {
     const passwordMatch = await bcrypt.compare(logPassword, user.password);
 
     if (passwordMatch) {
-      return res.status(200).json({ Logged: "In successfully" });
+      return res.redirect("/api/expense");
     } else {
       return res.status(401).json({ error: "User Not Authorized" });
     }

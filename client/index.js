@@ -53,6 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       form.reset();
 
+      window.location.href = "/expense.html";
+
       console.log(response);
     } catch (error) {
       if (error.response.status === 409) {
@@ -107,6 +109,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       login.reset();
       console.log(response);
+
+      window.location.href = "/expense.html";
     } catch (error) {
       if (error.response.status === 401) {
         console.log(

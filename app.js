@@ -24,8 +24,13 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "user.html"));
 });
 
+app.get("/api/expense", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "expense.html"));
+});
+
 app.use("/api/newUser", newUserRouter);
 app.use("/api/user", newUserRouter);
+app.use("/api", newUserRouter);
 
 const port = process.env.PORT || 5000;
 
