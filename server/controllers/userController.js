@@ -1,6 +1,10 @@
 const SignUp = require("../models/newUser");
 const bcrypt = require("bcrypt");
 
+const jwt = require("jsonwebtoken");
+
+const sec_key = "weall00@#90";
+
 const addUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -16,8 +20,13 @@ const addUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await SignUp.create({ name: name, email: email, password: hashedPassword });
+    const token = jwt.sign({ email: email }, sec_key, {
+      expiresIn: "1h",
+    });
 
-    return res.status(201).send("New User Created");
+    console.log("SignUp Token=>", token);
+
+    return res.status(201).json({ message: "New User Created", token: token });
   } catch (error) {
     return res.status(500).send("Failed to create new user");
   }
@@ -38,7 +47,18 @@ const loginUser = async (req, res) => {
     const passwordMatch = await bcrypt.compare(logPassword, user.password);
 
     if (passwordMatch) {
-      return res.redirect("/api/expense");
+      // Send a success status (e.g., 200) and a message
+      const token = jwt.sign(
+        { id: user.id, email: email, name: user.name },
+        sec_key,
+        {
+          expiresIn: "1h",
+        }
+      );
+      console.log("Login token=>", token);
+      return res
+        .status(200)
+        .json({ message: "Login successful", token: token, signUpId: user.id });
     } else {
       return res.status(401).json({ error: "User Not Authorized" });
     }

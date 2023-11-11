@@ -16,8 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
       category: category,
     };
 
+    const token = localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     try {
-      const response = await axios.post("/api/expense", data);
+      const response = await axios.post("/api/expense", data, config);
+      console.log("local storage token", token);
 
       console.log(response);
 
@@ -29,15 +38,23 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const getData = document.getElementById("getData");
+  const token = localStorage.getItem("token");
 
   const getAllExpense = async () => {
-    const response = await axios.get("/api/get/expense");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.get("/api/get/expense", config);
 
-    let expenses = response.data;
+    let expenses1 = response.data;
+
+    console.log("expenses1=>", expenses1);
 
     getData.innerHTML = "Expense Details";
 
-    expenses.forEach((expense) => {
+    expenses1.forEach((expense) => {
       try {
         const listItem = document.createElement("li");
         listItem.textContent = `Amount: ₹${expense.amount} | Description:${expense.description} | Category:${expense.category}`;
@@ -53,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         deleteBtn.addEventListener("click", () => {
           deleteExpense(expense.id);
-          getAllExpense();
         });
 
         let editButton = document.createElement("button");
@@ -81,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await axios.delete(`/api/delete/${expenseId}`);
 
       console.log(response.data);
+      getAllExpense();
     } catch (error) {
       console.error("Unable to delete the task", error);
     }

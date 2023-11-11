@@ -91,11 +91,23 @@ document.addEventListener("DOMContentLoaded", () => {
         logPassword: logPassword,
       };
 
-      const response = await axios.post("/api/user/login", loginData);
-
+      const response = await axios.post("/api/user/login", loginData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       //
       if (response.status === 200) {
         console.log("this is response status==>", response.status);
+
+        const token = response.data.token;
+
+        console.log("token at client side=>", token);
+
+        // Store the token in localStorage
+        localStorage.setItem("token", token);
+
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
         const errMsg = document.getElementById("login-message");
         errMsg.innerHTML = `<b>Logged In Successfully !!</b>`;
