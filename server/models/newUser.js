@@ -17,6 +17,10 @@ const SignUp = sequelize.define("sign_up", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+
+  is__Premium: {
+    type: Sequelize.BOOLEAN,
+  },
 });
 
 module.exports = SignUp;

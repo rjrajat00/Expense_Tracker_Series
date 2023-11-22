@@ -10,9 +10,11 @@ const colors = require("colors");
 
 const bodyParser = require("body-parser");
 const newUserRouter = require("./server/routes/routes");
+const buyPremiumRoutes = require("./server/routes/razorpay");
 const sequelize = require("./server/models/db");
 const User = require("./server/models/newUser");
 const Expense = require("./server/models/expense");
+const Order = require("./server/models/order");
 
 const app = express();
 
@@ -31,9 +33,13 @@ app.get("/", (req, res) => {
 app.use("/api/newUser", newUserRouter);
 app.use("/api/user", newUserRouter);
 app.use("/api", newUserRouter);
+app.use("/buy", buyPremiumRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
+
+Order.belongsTo(User);
+User.hasMany(Order);
 
 const port = process.env.PORT || 5000;
 
@@ -41,8 +47,8 @@ sequelize
   .sync()
   .then(() => {
     app.listen(port, () => {
-      console.log(`Server is running on port ${port}`.red);
-      console.log("Connected To Database Successfully".underline.blue);
+      console.log(`Server is running on port ${port}`.green);
+      console.log("Connected To Database Successfully".underline.yellow);
     });
 
     sequelize.sync(() => {

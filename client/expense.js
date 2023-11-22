@@ -124,4 +124,89 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   getAllExpense();
+
+  const premium = document.getElementById("prem");
+  const premiumMember = document.getElementById("preMember");
+
+  premium.addEventListener("click", async () => {
+    console.log("Premium button is clicked");
+    console.log("token=>", token);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const amount = 4900;
+    try {
+      const response = await axios.post(
+        "/buy/premium",
+        { amount },
+
+        config
+      );
+
+      console.log("response=>", response.data.key_id);
+
+      const { orderId, orderAmount } = response.data;
+      console.log("this is the orderID=>", orderId);
+      var options = {
+        key: "rzp_test_FsjhNXyL5SpugN", // Replace with your actual key
+
+        name: "Z3RO_THR3E Communications.",
+        description: "Premium Membership",
+        amount: orderAmount,
+        image: "logo_expense_tracker_razorpay.png",
+        order_id: orderId,
+
+        handler: async function (response) {
+          try {
+            await axios.post(
+              "/buy/update/status",
+              {
+                order_id: options.order_id,
+                paymentId: response.razorpay_payment_id,
+              },
+              config
+            );
+
+            console.log("Payment status updated successfully");
+          } catch (error) {
+            console.error("Error updating payment status:", error);
+          }
+          alert("Congratulations! You are a Premium Member Now");
+          premium.style.display = "none";
+          premiumMember.textContent = `Premium Member`;
+          premiumMember.style.display = "block";
+        },
+
+        // ... (existing code)
+
+        callback_url: "https://eneqd3r9zrjok.x.pipedream.net/",
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      let rzp = new Razorpay(options);
+      rzp.open();
+
+      rzp.on("payment.failed", async (response) => {
+        console.log(response);
+
+        await axios.post(
+          "/buy/update/status",
+          {
+            order_id: options.order_id,
+            paymentId: response.razorpay_payment_id,
+          },
+          config
+        );
+      });
+
+      console.log("this is razorpay response=>", response);
+    } catch (error) {
+      console.error("Error in creating orderId ", error);
+    }
+  });
 });

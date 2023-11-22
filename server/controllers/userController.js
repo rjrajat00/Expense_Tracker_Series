@@ -21,7 +21,7 @@ const addUser = async (req, res) => {
 
     await SignUp.create({ name: name, email: email, password: hashedPassword });
     const token = jwt.sign({ email: email }, sec_key, {
-      expiresIn: "1h",
+      expiresIn: "4h",
     });
 
     console.log("SignUp Token=>", token);
@@ -33,9 +33,13 @@ const addUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, logPassword } = req.body;
+  const { email, logPassword, is__Premium } = req.body;
 
-  console.log(`Login Details, username=>${email} and password=>${logPassword}`);
+  console.log(
+    `Login Details, username=>${email} and password=>${logPassword}`,
+    "is__Premium=>,",
+    is__Premium
+  );
 
   try {
     const user = await SignUp.findOne({ where: { email } });
