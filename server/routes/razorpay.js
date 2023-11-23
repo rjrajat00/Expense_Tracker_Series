@@ -10,4 +10,6 @@ router.post("/premium", verifyToken, orderController.buyPremium);
 
 router.post("/update/status", verifyToken, orderController.updateTxnStatus);
 
+router.get("/premium/status", verifyToken, orderController.checkPremiumStatus);
+
 module.exports = router;

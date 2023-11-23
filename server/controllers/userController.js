@@ -19,7 +19,12 @@ const addUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await SignUp.create({ name: name, email: email, password: hashedPassword });
+    await SignUp.create({
+      name: name,
+      email: email,
+      password: hashedPassword,
+      is__Premium: false,
+    });
     const token = jwt.sign({ email: email }, sec_key, {
       expiresIn: "4h",
     });

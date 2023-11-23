@@ -1,7 +1,10 @@
-console.log("hello from the expense html page");
+console.log("hello from the expense HTML page");
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Existing code for expense form
   const form = document.getElementById("form");
+  const premium = document.getElementById("prem");
+  const premiumMember = document.getElementById("preMember");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -37,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Existing code for handling expense data
   const getData = document.getElementById("getData");
   const token = localStorage.getItem("token");
 
@@ -95,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
   async function deleteExpense(expenseId) {
     try {
       const response = await axios.delete(`/api/delete/${expenseId}`);
-
       console.log(response.data);
       getAllExpense();
     } catch (error) {
@@ -116,17 +119,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await axios.put(`/api/edit/${expenseId}`, updatedData);
-
       console.log(response.data);
     } catch (error) {
       console.error("Unable to edit the expenses", error);
     }
   }
 
-  getAllExpense();
+  // Check and update premium status on every login
+  const isPremiumUser = await checkPremiumStatus();
+  handlePremiumStatus(isPremiumUser);
 
-  const premium = document.getElementById("prem");
-  const premiumMember = document.getElementById("preMember");
+  // Premium button click event
 
   premium.addEventListener("click", async () => {
     console.log("Premium button is clicked");
@@ -139,12 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const amount = 4900;
     try {
-      const response = await axios.post(
-        "/buy/premium",
-        { amount },
-
-        config
-      );
+      const response = await axios.post("/buy/premium", { amount }, config);
 
       console.log("response=>", response.data.key_id);
 
@@ -175,12 +173,8 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error updating payment status:", error);
           }
           alert("Congratulations! You are a Premium Member Now");
-          premium.style.display = "none";
-          premiumMember.textContent = `Premium Member`;
-          premiumMember.style.display = "block";
+          window.location.reload();
         },
-
-        // ... (existing code)
 
         callback_url: "https://eneqd3r9zrjok.x.pipedream.net/",
         theme: {
@@ -209,4 +203,42 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error in creating orderId ", error);
     }
   });
+
+  // Function to check premium status
+  async function checkPremiumStatus() {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.get("/check/premium/status", config);
+
+      // Assuming the API response contains a property like 'isPremium'
+      console.log("premium Status response=>", response);
+      return response.data.isPremium;
+    } catch (error) {
+      console.error("Error checking premium status:", error);
+      // Handle the error or return a default value
+      return false;
+    }
+  }
+
+  // Function to handle premium status
+  function handlePremiumStatus(isPremiumUser) {
+    const normalNav = document.getElementById("normalNav");
+    const premiumNav = document.getElementById("premiumNav");
+
+    if (isPremiumUser) {
+      premium.style.display = "none";
+      premiumMember.style.display = "block";
+      normalNav.style.display = "none";
+      premiumNav.style.display = "block";
+    } else {
+      premium.style.display = "block";
+      premiumMember.style.display = "none";
+      normalNav.style.display = "block";
+      premiumNav.style.display = "none";
+    }
+  }
 });

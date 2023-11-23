@@ -1,3 +1,4 @@
+// Import necessary modules
 const Razorpay = require("razorpay");
 const Order = require("../models/order");
 const SignUp = require("../models/newUser");
@@ -8,10 +9,8 @@ let rzp = new Razorpay({
 });
 
 const buyPremium = async (req, res) => {
-  // GET request from cleint side
   try {
-    const amount = req.body.amount; // Amount in paise
-
+    const amount = req.body.amount;
     const signUpId = req.decoded.id;
 
     const options = {
@@ -19,8 +18,6 @@ const buyPremium = async (req, res) => {
       currency: "INR",
       receipt: "order_rcptid_" + Date.now(),
     };
-
-    console.log("amount=>", amount);
 
     rzp.orders.create(options, async (err, order) => {
       if (err) {
@@ -31,7 +28,6 @@ const buyPremium = async (req, res) => {
       await Order.create({
         orderId: order.id,
         signUpId: signUpId,
-
         status: "pending",
       });
 
@@ -42,51 +38,6 @@ const buyPremium = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-/*const buyPremium = async (req, res) => { // GET request from cleint side
-  try {
-    const options = {
-      amount: 5000, // amount in the smallest currency unit
-      currency: "INR",
-      receipt: "order_rcptid_11",
-    };
-    instance.orders.create(options, async (err, order) => {
-      if (err) {
-        console.error("Error creating Razorpay order:", err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-      const { id: order_id } = order;
-      const { paymentId } = req.body;
-      const signUpId = req.decoded.id;
-      const email = req.decoded.email;
-
-      console.log(
-        order_id,
-        "req Body=>,",
-        req.body,
-        "signUpId=>",
-        signUpId,
-        email,
-        "req params=>",
-        req.params,
-        "status=>",
-        status
-      );
-
-      await Order.create({
-        orderId: order_id,
-        signUpId: signUpId,
-        paymentId: paymentId,
-       
-      });
-
-      res.json({ orderId: order.id });
-    });
-  } catch (error) {
-    console.error("Error in creating Razorpay order:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-*/
 
 const updateTxnStatus = async (req, res) => {
   try {
@@ -106,40 +57,56 @@ const updateTxnStatus = async (req, res) => {
     }
 
     const order = await Order.findOne({ where: { orderId: order_id } });
-    let promise1;
 
     if (!order) {
       throw new Error("Order not found");
     }
+
+    let promise1;
+
     if (paymentId) {
       promise1 = order.update({
         paymentId: paymentId,
-
         status: "Successful",
       });
     } else {
       promise1 = order.update({
         paymentId: paymentId,
-
         status: "Failure",
       });
     }
 
     const promise2 = req.SignUp.update({ is__Premium: true });
 
-    Promise.all([promise1, promise2])
-      .then(() => {
-        return res
-          .status(202)
-          .json({ success: true, message: "Something went not right" });
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
+    await Promise.all([promise1, promise2]);
+
+    res.status(202).json({
+      success: true,
+      message:
+        "Transaction status and user premium status updated successfully",
+    });
   } catch (error) {
-    console.error("Error fetching premium user:", error);
+    console.error(
+      "Error updating transaction status and user premium status:",
+      error
+    );
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-module.exports = { buyPremium, updateTxnStatus };
+const checkPremiumStatus = async (req, res) => {
+  try {
+    const user = await SignUp.findOne({ where: { id: req.decoded.id } });
+
+    console.log("user.is__Premium =>", user.is__Premium);
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    return res.json({ isPremium: user.is__Premium });
+  } catch (error) {
+    console.error("Error checking premium status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+module.exports = { buyPremium, updateTxnStatus, checkPremiumStatus };
