@@ -102,7 +102,7 @@ const checkPremiumStatus = async (req, res) => {
 
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    return res.json({ isPremium: user.is__Premium });
+    res.json({ isPremium: user.is__Premium });
   } catch (error) {
     console.error("Error checking premium status:", error);
     res.status(500).json({ error: "Internal Server Error" });

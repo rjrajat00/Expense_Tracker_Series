@@ -1,10 +1,9 @@
 console.log("hello from the expense HTML page");
 
+// Function to handle premium status
+
 document.addEventListener("DOMContentLoaded", async () => {
-  // Existing code for expense form
   const form = document.getElementById("form");
-  const premium = document.getElementById("prem");
-  const premiumMember = document.getElementById("preMember");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -18,9 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       description: description,
       category: category,
     };
-
     const token = localStorage.getItem("token");
-
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -28,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post("/api/expense", data, config);
       console.log("local storage token", token);
 
@@ -40,11 +38,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Existing code for handling expense data
   const getData = document.getElementById("getData");
-  const token = localStorage.getItem("token");
 
   const getAllExpense = async () => {
+    const token = localStorage.getItem("token");
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -130,9 +127,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   handlePremiumStatus(isPremiumUser);
 
   // Premium button click event
-
+  const premium = document.getElementById("prem");
   premium.addEventListener("click", async () => {
     console.log("Premium button is clicked");
+    const token = localStorage.getItem("token");
+
     console.log("token=>", token);
 
     const config = {
@@ -207,6 +206,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Function to check premium status
   async function checkPremiumStatus() {
     try {
+      const token = localStorage.getItem("token");
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -224,8 +224,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Function to handle premium status
   function handlePremiumStatus(isPremiumUser) {
+    const premium = document.getElementById("prem");
+    const premiumMember = document.getElementById("preMember");
     const normalNav = document.getElementById("normalNav");
     const premiumNav = document.getElementById("premiumNav");
 
@@ -241,4 +242,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       premiumNav.style.display = "none";
     }
   }
+
+  const normalLogOut = document.getElementById("logOut1");
+  normalLogOut.addEventListener("click", logout);
+
+  const premiumLogOut = document.getElementById("logOut2");
+  premiumLogOut.addEventListener("click", logout);
+
+  async function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  }
+
+  getAllExpense();
 });

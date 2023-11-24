@@ -19,13 +19,16 @@ const addUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await SignUp.create({
+    const newUser = await SignUp.create({
       name: name,
       email: email,
       password: hashedPassword,
       is__Premium: false,
     });
-    const token = jwt.sign({ email: email }, sec_key, {
+    console.log(newUser);
+
+    const userId = newUser.id;
+    const token = jwt.sign({ email: email, name: name, id: userId }, sec_key, {
       expiresIn: "4h",
     });
 
@@ -61,7 +64,7 @@ const loginUser = async (req, res) => {
         { id: user.id, email: email, name: user.name },
         sec_key,
         {
-          expiresIn: "1h",
+          expiresIn: "4h",
         }
       );
       console.log("Login token=>", token);

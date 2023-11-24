@@ -35,7 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
         password: password,
       };
 
-      const response = await axios.post("/api/newUser", data);
+      const response = await axios.post("/api/newUser", data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       if (response.status === 201) {
         console.log("response status , (201 expected)=>", response.status);
@@ -49,6 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
           errMsg.style.display = "none";
         }, 3000);
+
+        const token = response.data.token;
+
+        console.log("token at client side=>", token);
+
+        // Store the token in localStorage
+        localStorage.setItem("token", token);
+
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       }
 
       form.reset();

@@ -23,10 +23,17 @@ const verifyToken = (req, res, next) => {
       // If verification succeeds, attach the decoded payload to the request object
       req.decoded = decoded;
 
+      console.log("Decoded:", decoded);
+
       try {
-        const user = await SignUp.findOne({ where: { id: decoded.id } });
-        req.SignUp = user;
-        next();
+        if (decoded && decoded.id) {
+          const user = await SignUp.findOne({ where: { id: decoded.id } });
+          req.SignUp = user;
+          next();
+        } else {
+          console.error("Decoded object is missing id property");
+          res.status(401).json({ error: "Unauthorized Access" });
+        }
       } catch (error) {
         console.error("Error fetching user:", error);
         res.status(500).json({ error: "Internal Server Error" });
