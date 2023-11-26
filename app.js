@@ -35,6 +35,7 @@ app.use("/api/user", newUserRouter);
 app.use("/api", newUserRouter);
 app.use("/buy", buyPremiumRoutes);
 app.use("/check", buyPremiumRoutes);
+app.use("/premium", buyPremiumRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);

@@ -2,6 +2,9 @@
 const Razorpay = require("razorpay");
 const Order = require("../models/order");
 const SignUp = require("../models/newUser");
+const jwt = require("jsonwebtoken");
+
+const sec_key = "Stack0035";
 
 let rzp = new Razorpay({
   key_id: "rzp_test_FsjhNXyL5SpugN",
@@ -42,6 +45,9 @@ const buyPremium = async (req, res) => {
 const updateTxnStatus = async (req, res) => {
   try {
     const { paymentId, order_id } = req.body;
+    const id = req.decoded.id;
+    const name = req.decoded.name;
+    const is__Premium = req.decoded.is__Premium;
 
     console.log(
       "Server Side <><>< payment_Id=>",
@@ -80,10 +86,19 @@ const updateTxnStatus = async (req, res) => {
 
     await Promise.all([promise1, promise2]);
 
+    const premiumToken = jwt.sign(
+      { id: id, name: name, is__Premium: true },
+      sec_key,
+      {
+        expiresIn: "10h",
+      }
+    );
+
     res.status(202).json({
       success: true,
       message:
         "Transaction status and user premium status updated successfully",
+      token: premiumToken,
     });
   } catch (error) {
     console.error(
@@ -102,7 +117,7 @@ const checkPremiumStatus = async (req, res) => {
 
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    res.json({ isPremium: user.is__Premium });
+    res.status(202).json({ isPremium: user.is__Premium });
   } catch (error) {
     console.error("Error checking premium status:", error);
     res.status(500).json({ error: "Internal Server Error" });

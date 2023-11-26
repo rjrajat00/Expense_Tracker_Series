@@ -123,8 +123,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Check and update premium status on every login
-  const isPremiumUser = await checkPremiumStatus();
-  handlePremiumStatus(isPremiumUser);
 
   // Premium button click event
   const premium = document.getElementById("prem");
@@ -158,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         handler: async function (response) {
           try {
-            await axios.post(
+            const res = await axios.post(
               "/buy/update/status",
               {
                 order_id: options.order_id,
@@ -166,8 +164,11 @@ document.addEventListener("DOMContentLoaded", async () => {
               },
               config
             );
-
-            console.log("Payment status updated successfully");
+            console.log("PremToken at client=>", res.data.token);
+            const premToken = res.data.token;
+            console.log("premium Token at client=>", premToken);
+            console.log("Payment status updated successfully", res);
+            localStorage.setItem("Premium_Token", premToken);
           } catch (error) {
             console.error("Error updating payment status:", error);
           }
@@ -196,7 +197,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           config
         );
       });
-
       console.log("this is razorpay response=>", response);
     } catch (error) {
       console.error("Error in creating orderId ", error);
@@ -214,8 +214,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       };
       const response = await axios.get("/check/premium/status", config);
 
-      // Assuming the API response contains a property like 'isPremium'
       console.log("premium Status response=>", response);
+      console.log("premium Token=>", response.data.premiumToken);
+
       return response.data.isPremium;
     } catch (error) {
       console.error("Error checking premium status:", error);
@@ -243,6 +244,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  const isPremiumUser = await checkPremiumStatus();
+  handlePremiumStatus(isPremiumUser);
+
   const normalLogOut = document.getElementById("logOut1");
   normalLogOut.addEventListener("click", logout);
 
@@ -251,8 +255,57 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("Premium_Token");
     window.location.href = "/";
   }
 
-  getAllExpense();
+  //getAllExpense();
+
+  // Leader Board Diaplay Function of HTml page
+
+  const leaderBoard = document.getElementById("leaderBoard");
+  const displayBoard = document.getElementById("leaderBoardContainer");
+
+  leaderBoard.addEventListener("click", async () => {
+    console.log("leaderBoard Button is clicked");
+    displayBoard.innerHTML = `<b style="color:black;">LeaderBoard</b>`;
+    displayBoard.style.backgroundColor = "aqua";
+    displayBoard.style.maxWidth = "300px";
+    displayBoard.style.marginTop = "30px";
+    displayBoard.style.marginLeft = "30px";
+
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get("/premium/features", config);
+
+      // Assuming response.data is an object containing premium features information
+      const premiumFeaturesData = response.data;
+
+      // Use the premiumFeaturesData to update your UI or perform other actions
+      console.log("Premium Features Data:", premiumFeaturesData);
+
+      // Example: Display premium features in the console
+      premiumFeaturesData.forEach((feature) => {
+        console.log(feature); // Log the feature object to inspect its structure
+        const listItem = document.createElement("li");
+
+        // Access totalExpenses directly
+
+        listItem.innerHTML = `Name: ${feature.name} | Total Expenses: ${feature.totalExpenses}`;
+
+        displayBoard.appendChild(listItem);
+      });
+
+      // You can update your UI based on the premium features data here
+    } catch (error) {
+      console.error("Error fetching premium features:", error);
+      // Handle the error (display a message, redirect, etc.)
+    }
+  });
 });

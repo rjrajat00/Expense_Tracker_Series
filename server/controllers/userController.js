@@ -41,13 +41,9 @@ const addUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, logPassword, is__Premium } = req.body;
+  const { email, logPassword } = req.body;
 
-  console.log(
-    `Login Details, username=>${email} and password=>${logPassword}`,
-    "is__Premium=>,",
-    is__Premium
-  );
+  console.log(`Login Details, username=>${email} and password=>${logPassword}`);
 
   try {
     const user = await SignUp.findOne({ where: { email } });
@@ -61,7 +57,12 @@ const loginUser = async (req, res) => {
     if (passwordMatch) {
       // Send a success status (e.g., 200) and a message
       const token = jwt.sign(
-        { id: user.id, email: email, name: user.name },
+        {
+          id: user.id,
+          email: email,
+          name: user.name,
+          is__Premium: user.is__Premium,
+        },
         sec_key,
         {
           expiresIn: "4h",
@@ -70,7 +71,12 @@ const loginUser = async (req, res) => {
       console.log("Login token=>", token);
       return res
         .status(200)
-        .json({ message: "Login successful", token: token, signUpId: user.id });
+        .json({
+          message: "Login successful",
+          token: token,
+          signUpId: user.id,
+          name: user.name,
+        });
     } else {
       return res.status(401).json({ error: "User Not Authorized" });
     }
