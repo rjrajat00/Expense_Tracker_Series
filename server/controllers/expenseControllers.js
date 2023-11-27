@@ -1,4 +1,3 @@
-const { sign } = require("jsonwebtoken");
 const Expense = require("../models/expense");
 const SignUp = require("../models/newUser");
 
@@ -21,11 +20,20 @@ const addExpense = async (req, res) => {
       signUpId: signUpId,
     });
 
+    const user = await SignUp.findByPk(signUpId);
+    const totalExpenses = Number(user.totalExpenses) + Number(amount);
+
+    await SignUp.update(
+      { totalExpenses: totalExpenses },
+      { where: { id: signUpId } }
+    );
+
     return res.status(201).send(expenses);
   } catch (error) {
     return res.status(500).send("Failed to add expenser");
   }
 };
+
 const getExpense = async (req, res) => {
   try {
     const expenses = await Expense.findAll({

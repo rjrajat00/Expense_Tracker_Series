@@ -21,6 +21,9 @@ const SignUp = sequelize.define("sign_up", {
   is__Premium: {
     type: Sequelize.BOOLEAN,
   },
+  totalExpenses: {
+    type: Sequelize.INTEGER,
+  },
 });
 
 module.exports = SignUp;
