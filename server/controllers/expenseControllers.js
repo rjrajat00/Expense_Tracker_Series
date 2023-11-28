@@ -1,7 +1,9 @@
+const sequelize = require("../models/db");
 const Expense = require("../models/expense");
 const SignUp = require("../models/newUser");
 
 const addExpense = async (req, res) => {
+  const txn = await sequelize.transaction();
   try {
     const { amount, description, category } = req.body;
 
@@ -13,24 +15,30 @@ const addExpense = async (req, res) => {
 
     console.log(amount, description, category, signUpId);
 
-    const expenses = await Expense.create({
-      amount,
-      description,
-      category,
-      signUpId: signUpId,
-    });
+    const expenses = await Expense.create(
+      {
+        amount,
+        description,
+        category,
+        signUpId,
+      },
+      { transaction: txn }
+    );
 
     const user = await SignUp.findByPk(signUpId);
     const totalExpenses = Number(user.totalExpenses) + Number(amount);
 
+    // Update the totalExpenses within the same transaction
     await SignUp.update(
       { totalExpenses: totalExpenses },
-      { where: { id: signUpId } }
+      { where: { id: signUpId }, transaction: txn }
     );
 
+    await txn.commit();
     return res.status(201).send(expenses);
   } catch (error) {
-    return res.status(500).send("Failed to add expenser");
+    await txn.rollback();
+    return res.status(500).send("Failed to add expense"); // Corrected typo here
   }
 };
 
@@ -48,18 +56,38 @@ const getExpense = async (req, res) => {
 };
 
 const deleteExpenses = async (req, res) => {
+  const txn = await sequelize.transaction();
   try {
     const { id } = req.params;
 
-    const expenses = await Expense.findByPk(id);
+    const expense = await Expense.findByPk(id);
 
-    if (expenses) await expenses.destroy();
+    if (expense) {
+      const signUpId = expense.signUpId;
+      const amount = expense.amount;
 
-    res.status(200).send(expenses);
+      await expense.destroy();
+
+      const user = await SignUp.findByPk(signUpId);
+      const totalExpenses = Number(user.totalExpenses) - Number(amount);
+
+      await SignUp.update(
+        { totalExpenses: totalExpenses },
+        { where: { id: signUpId }, transaction: txn }
+      );
+      await txn.commit();
+      res.status(200).send(expense);
+    } else {
+      res.status(404).send({ error: "Expense not found" });
+      await txn.rollback();
+    }
   } catch (error) {
-    res.status(400).send({ error: "Unable to delete" });
+    console.error(error);
+    await txn.rollback();
+    res.status(500).send({ error: "Internal Server Error" });
   }
 };
+
 const editExpenses = async (req, res) => {
   try {
     const expensesId = req.params.id;

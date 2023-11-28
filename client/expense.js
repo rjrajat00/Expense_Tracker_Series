@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/";
   }
 
-  //getAllExpense();
+  getAllExpense();
 
   // Leader Board Diaplay Function of HTml page
 
