@@ -68,8 +68,10 @@
             display: none;
         }
     </style>
+
+    
 </head>
-<body>
+<body style="background-color: antiquewhite;">
 
     <div id="login-message"  style="margin-top: auto; margin-bottom:40px ;"></div>
 
@@ -84,11 +86,14 @@
                 <label for="password">Password</label>
                 <input type="password" id="login-password" name="password" autocomplete="current-password" required>
             </div>
+            <div class="form-switch" style="margin-bottom: 7px;justify-content: left">
+               <span style="color: red; font-family: 'Courier New', Courier, monospace;">Forgot Password?</span> <a href="#" style="font-family:  Calibri, 'Trebuchet MS', sans-serif;"  class="underlined-link" id="forgotPass-link">Click Here !!</a>
+            </div>
             <button class="btn" type="submit">Login</button>
         </form>
 
        
-        <div class="form-switch">
+        <div class="form-switch" style="margin-top: 7px;">
             <a href="#" id="signup-link">Don't have an account? Sign up</a>
         </div>
     </div>

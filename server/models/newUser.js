@@ -23,6 +23,7 @@ const SignUp = sequelize.define("sign_up", {
   },
   totalExpenses: {
     type: Sequelize.INTEGER,
+    defaultValue: 0,
   },
 });
 

@@ -37,6 +37,9 @@ app.use("/buy", buyPremiumRoutes);
 app.use("/check", buyPremiumRoutes);
 app.use("/premium", buyPremiumRoutes);
 
+// Fogotten Password recovery route
+app.use("/password", buyPremiumRoutes);
+
 User.hasMany(Expense);
 Expense.belongsTo(User);
 

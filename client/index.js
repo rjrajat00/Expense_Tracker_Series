@@ -19,7 +19,12 @@ signupLink.addEventListener("click", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("form");
-  const showAlert = document.getElementById("showAlert");
+  const forgotPassLink = document.getElementById("forgotPass-link");
+
+  function forgotPassForm() {
+    window.location.href = "/forgotpass.html";
+  }
+  forgotPassLink.addEventListener("click", forgotPassForm);
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();

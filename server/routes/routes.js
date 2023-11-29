@@ -3,7 +3,6 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const expenseController = require("../controllers/expenseControllers");
 const verifyToken = require("../../middleware/auth");
-const { verify } = require("jsonwebtoken");
 
 // user Signup and Login
 
