@@ -2,7 +2,7 @@ const express = require("express");
 const orderController = require("../controllers/orderController");
 const verifyToken = require("../../middleware/auth");
 const { leaderBoard } = require("../controllers/premiumFeatures");
-const { forgotPass } = require("../controllers/forgotPassController");
+const forgotPassDetails = require("../controllers/forgotPassController");
 
 const router = express.Router();
 
@@ -17,6 +17,13 @@ router.get("/premium/status", verifyToken, orderController.checkPremiumStatus);
 router.get("/features", verifyToken, leaderBoard);
 
 // Handling Forgotten password recorvery details
-router.post("/forgotPassword", forgotPass);
+router.post("/forgotPassword", forgotPassDetails.forgotPass);
+
+router.get("/resetPassword/:id", forgotPassDetails.resetpassword);
+
+router.get(
+  "/updatepassword/:resetpasswordid",
+  forgotPassDetails.updatepassword
+);
 
 module.exports = router;

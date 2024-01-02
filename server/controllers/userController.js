@@ -69,14 +69,12 @@ const loginUser = async (req, res) => {
         }
       );
       console.log("Login token=>", token);
-      return res
-        .status(200)
-        .json({
-          message: "Login successful",
-          token: token,
-          signUpId: user.id,
-          name: user.name,
-        });
+      return res.status(200).json({
+        message: "Login successful",
+        token: token,
+        signUpId: user.id,
+        name: user.name,
+      });
     } else {
       return res.status(401).json({ error: "User Not Authorized" });
     }

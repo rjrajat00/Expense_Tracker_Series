@@ -15,6 +15,7 @@ const sequelize = require("./server/models/db");
 const User = require("./server/models/newUser");
 const Expense = require("./server/models/expense");
 const Order = require("./server/models/order");
+const ForgotPassReq = require("./server/models/forgotPassReq");
 
 const app = express();
 
@@ -45,6 +46,9 @@ Expense.belongsTo(User);
 
 Order.belongsTo(User);
 User.hasMany(Order);
+
+User.hasMany(ForgotPassReq);
+ForgotPassReq.belongsTo(User);
 
 const port = process.env.PORT || 5000;
 
